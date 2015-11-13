@@ -1,0 +1,475 @@
+<div class="container">
+  <!-- title -->
+  <h1 class="text-center">Wie funktioniert es?
+
+  <!-- Got it? -->
+  <div class="box">
+    <!-- title -->
+    <h3>Alles verstanden?
+    <div class="space">
+    <!-- back to LstCom -->
+    Klicke <a href=@{LstComR}>hier</a>, um zurück zu den Aufgaben zu
+    gelangen!<br><br>
+    Achtung:<br>
+    Dieser Webservice verwendet eine abgespeckte Grammatik. Dies
+    bedeutet, dass nicht alle offiziell gültigen List Comprehensions
+    verarbeitet werden können. Bitte klicke <a href="#grammar">hier</a>,
+    um mehr zu erfahren.
+
+  <!-- List Comprehension -->
+  <div class="box">
+    <!-- title -->
+    <h3>List Comprehension
+    <div class="space">
+    <!-- explanation -->
+    List Comprehension kann in Haskell genutzt werden, um Listen zu generieren.
+    Sie besteht zum Einem aus einem Ausdruck, der zum Auswerten
+    der einzelnen Listenelemente ist und zum Anderem aus <i>Qualifiers</i>, über
+    welche Einfluss auf die Auswertung genommen werden kann. Unter ihnen gibt es
+    <i>Generators</i>, <i>Declarations</i> und <i>Guards</i>. <i>Qualifiers</i>
+    können beliebig oft und in beliebiger Reihenfolge verwendet werden. Sie
+    werden dabei voneinander mit Kommas getrennt. <br>
+    <i>[ 2 * y | x <- [ 1 , 2 , 3 ] , let y = x * x , y < 5 ]</i> <br>
+    Im Beispiel entspricht <i>2 * y</i> dem Ausdruck zum Auswerten der
+    Listenelemente. Er ist über <i>|</i> von den <i>Qualifiers</i> getrennt. <br>
+    Die restlichen Elemente sind mit <i>x <- [1,2,3]</i> ein <i>Generator</i>,
+    mit <i>let y = x * x</i> eine <i>Declaration</i> und mit <i>y < 5</i> ein
+    <i>Guard</i>. <br>
+    <i>Generators</i> bestehen aus zwei Teilen, getrennt durch einen Linkspfeil.
+    Rechts von ihm steht ein Ausdruck, der zu einer Liste auswerten muss, und
+    links ein Zuweisungsmuster. Später werden über <i>Pattern Matching</i> nach
+    und nach die Elemente der Liste den Variablen des Musters zugewiesen. Sie
+    sind in allen nachfolgenden <i>Qualifiers</i> und im Ausdruck zum Berechnen
+    der Listenelemente gültig. <br>
+    Mit <i>Declarations</i> können ebenfalls Variablen deklariert werden. Sie
+    verhalten sich wie ein <i>let</i> Ausdruck ohne <i>in</i>. Ihr
+    Gültigkeitsbereich ist dabei, wie beim <i>Generator</i>, alle nachfolgenden
+    <i>Qualifiers</i> und der Ausdruck zum Berechnen der Listenelemente. <br>
+    <i>Guards</i> bestimmen, ob ein Listenelement berechnet wird. Deshalb müssen
+    sie immer einen Wahrheitswert zurückgeben. Sobald einer zu <i>False</i>
+    auswertet, wird die Berechnung des aktuellen Listenelements ausgelassen.
+    <div class="space">
+    Der folgende Pseudocode beschreibt den Auswertungsablauf einer List
+    Comprehension:
+    <div class="space">
+    <div class="code">
+      <div class="tab">
+        1. Durchlaufe alle Qualifiers von links nach rechts, falls<br>
+        <div class="tab">
+          - Generator:<br>
+          <div class="tab">
+            1.1. Keine/Leere Liste:<br>
+            <div class="tab">
+              Berechne neue Liste über Listenausdruck des Generators.<br>
+              Falls immernoch leer gehe zu 3, sonst gehe zu 1.2.<br>
+            1.2. Sonst:<br>
+            <div class="tab">
+              Entferne erstes Element aus Liste und weise es dem<br>
+              Muster zu. Falls nicht möglich gehe zu 3.<br>
+          - Declaration:<br>
+          <div class="tab">
+            Weise Ausdruck der/den Variable(n) zu.<br>
+          - Guard:<br>
+          <div class="tab">
+            Werte Ausdruck aus, falls False gehe zu 3.<br>
+          - Ende:<br>
+          <div class="tab">
+            Gehe zu 2.<br>
+        <br>
+        2. Berechne neues Listenelement<br>
+        <br>
+        3. Durchlaufe Qualifiers von rechts nach links bis Generator mit nicht
+        leerer Liste gefunden wird:<br>
+        <div class="tab">
+          - Gefunden:<br>
+          <div class="tab">
+            Nehme ihn als Startpunkt um 1. auszuführen.<br>
+          - Nicht gefunden:<br>
+          <div class="tab">
+            Gib bisherig berechnete Liste zurück.<br>
+            Programmende.<br>
+    <div class="space">
+    <div class="space">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a data-toggle="collapse" data-target="#collapse">
+          Der Ablauf des obigen Beispiels würde folgendermaßen aussehen:
+      <div id="collapse" class="panel-collapse collapse">
+        <div class="space">
+        <div class="code">
+          <div class="tab">
+            Durchlaufe Qualifiers von links nach rechts:
+            <div class="tab">
+              <i>x <- [1,2,3]</i> enstpricht einem Generator<br>
+              => Berechne aus dem Ausdruck <i>[1,2,3]</i> eine neue Liste<br>
+              => Entferne das Element <i>1</i> und weise es der Variable <i>x</i> zu<br>
+              <br>
+              <i>let y = x * x</i> entspricht einer Declaration<br>
+              => Weise <i>y</i> den Wert <i>1</i> zu<br>
+              <br>
+              <i>y < 5</i> entspricht einem Guard<br>
+              => Guard wertet zu <i>True</i> aus<br>
+            <br>
+            Berechne neues Listenelement über <i>2 * y</i>
+            <div class="tab">
+              => Element <i>2</i> wird zur Endliste hinzugefügt<br>
+            <br>
+            Durchlaufe Qualifiers von rechts nach links bis Generator mit nicht
+            leerer Liste gefunden wird:
+            <div class="tab">
+              => Generator <i>x <- [2,3]</i> hat nicht leere Liste<br>
+            <br>
+            Durchlaufe Qualifiers von links nach rechts ab Generator <i>x <- [2,3]</i>
+            <div class="tab">
+              <i>x <- [2,3]</i> enstpricht einem Generator<br>
+              => Entferne das Element <i>2</i> und weise es der Variable <i>x</i> zu<br>
+              <br>
+              <i>let y = x * x</i> entspricht einer Declaration<br>
+              => Weise <i>y</i> den Wert <i>4</i> zu<br>
+              <br>
+              <i>y < 5</i> entspricht einem Guard<br>
+              => Guard wertet zu <i>True</i> aus<br>
+            <br>
+            Berechne neues Listenelement über <i>2 * y</i>
+            <div class="tab">
+              => Element <i>8</i> wird zur Endliste hinzugefügt<br>
+            <br>
+            Durchlaufe Qualifiers von rechts nach links bis Generator mit nicht
+            leerer Liste gefunden wird:
+            <div class="tab">
+              => Generator <i>x <- [3]</i> hat nicht leere Liste<br>
+            <br>
+            Durchlaufe Qualifiers von links nach rechts ab Generator <i>x <- [3]</i>
+            <div class="tab">
+              <i>x <- [3]</i> enstpricht einem Generator<br>
+              => Entferne das Element <i>3</i> und weise es der Variable <i>x</i> zu<br>
+              <br>
+              <i>let y = x * x</i> entspricht einer Declaration<br>
+              => Weise <i>y</i> den Wert <i>9</i> zu<br>
+              <br>
+              <i>y < 5</i> entspricht einem Guard<br>
+              => Guard wertet zu <i>False</i> aus<br>
+              => Gehe zu Schritt 3<br>
+            <br>
+            Durchlaufe Qualifiers von rechts nach links bis Generator mit nicht
+            leerer Liste gefunden wird:
+            <div class="tab">
+              => Kein Generator gefunden<br>
+              => Gib Liste [2,8] zurück
+            <div class="space">
+    Um das Beispiel in dieser Webapplikation testen zu können, muss die
+    <i>Declaration</i> durch einen <i>Generator</i> imitiert werden: <br>
+    <i>[ 2 * y | x <- [ 1 , 2 , 3 ] , y <- [ x * x ] , y < 5 ]</i>
+    <div class="space">
+
+  <!-- Grammar -->
+  <div class="box" id="grammar">
+    <!-- title -->
+    <h3>Grammatik
+    <div class="space">
+    <!-- grammar -->
+    Um eine geeignetere Fehlererkennung zu bieten, wurde die Grammatik der
+    List Comprehension in dieser Webapplikation verändert. Beispielsweise können
+    keine <i>let</i> Ausdrücke mehr verwendet werden. Alternativ kann man sie
+    durch <i>Generators</i> imitieren. Nachfolgend ist die komplette Grammatik,
+    die von der Webapplikation genutzt wird, angegeben:
+    <div class="space">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>lstcom
+          <td>→
+          <td>[ exp | qual <b>[</b> , qual <b>]</b> ]
+          <td class="hidden-xs">(list comprehension)
+        <tr>
+          <td>qual
+          <td>→
+          <td>pat <- exp
+          <td class="hidden-xs">(generator)
+        <tr>
+          <td>
+          <td>|
+          <td>exp
+          <td class="hidden-xs">(guard)
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>pat
+          <td>→
+          <td>lpat <b>[</b> : lpat <b>]</b> : lstend
+          <td class="hidden-xs">(list)
+        <tr>
+          <td>
+          <td>|
+          <td>lpat
+          <td class="hidden-xs">
+        <tr>
+          <td>lpat
+          <td>→
+          <td>[ pat <b>{</b> , pat <b>}</b> ]
+          <td class="hidden-xs">(list)
+        <tr>
+          <td>
+          <td>|
+          <td>( pat <b>{</b> , pat <b>}</b> )
+          <td class="hidden-xs">(tuple/parenthesized)
+        <tr>
+          <td>
+          <td>|
+          <td>var
+          <td class="hidden-xs">(variable)
+        <tr>
+          <td>lstend
+          <td>→
+          <td>( lstend )
+          <td class="hidden-xs">(parenthesized)
+        <tr>
+          <td>
+          <td>|
+          <td>[]
+          <td class="hidden-xs">(empty list)
+        <tr>
+          <td>
+          <td>|
+          <td>[ pat <b>{</b> , pat <b>}</b> ]
+          <td class="hidden-xs">(list)
+        <tr>
+          <td>
+          <td>|
+          <td>var
+          <td class="hidden-xs">(variable)
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>exp
+          <td>→
+          <td>lexp op exp
+          <td class="hidden-xs">(infix operator)
+        <tr>
+          <td>
+          <td>|
+          <td>- exp
+          <td class="hidden-xs">(prefix negation)
+        <tr>
+          <td>
+          <td>|
+          <td>lexp
+          <td class="hidden-xs">
+        <tr>
+          <td>lexp
+          <td>→
+          <td>if exp then exp else exp
+          <td class="hidden-xs">(conditional)
+        <tr>
+          <td>
+          <td>|
+          <td>funcs <b>{</b> <b>(</b> sexp <b>|</b> aexp <b>)</b> <b>}</b>
+          <td class="hidden-xs">(function)
+        <tr>
+          <td>
+          <td>|
+          <td>aexp
+          <td class="hidden-xs">
+        <tr>
+          <td>sexp
+          <td>→
+          <td>( aexp op )
+          <td class="hidden-xs">(left section)
+        <tr>
+          <td>
+          <td>|
+          <td>( op <sub>( - )</sub> aexp )
+          <td class="hidden-xs">(right section)
+        <tr>
+          <td>aexp
+          <td>→
+          <td>()
+          <td class="hidden-xs">(empty tuple)
+        <tr>
+          <td>
+          <td>|
+          <td>( exp <b>{</b> , exp <b>}</b> )
+          <td class="hidden-xs">(tuple/parenthesized)
+        <tr>
+          <td>
+          <td>|
+          <td>[]
+          <td class="hidden-xs">(empty list)
+        <tr>
+          <td>
+          <td>|
+          <td>[ exp <b>{</b> , exp <b>}</b> ]
+          <td class="hidden-xs">(list)
+        <tr>
+          <td>
+          <td>|
+          <td>[ exp <b>[</b> , exp <b>]</b> .. exp ]
+          <td class="hidden-xs">(arithmetic sequence)
+        <tr>
+          <td>
+          <td>|
+          <td>lstcom
+          <td class="hidden-xs">(list comprehension)
+        <tr>
+          <td>
+          <td>|
+          <td>literal
+          <td class="hidden-xs">(literal)
+        <tr>
+          <td>
+          <td>|
+          <td>var
+          <td class="hidden-xs">(variable)
+        <tr>
+          <td>
+          <td>|
+          <td>True
+          <td class="hidden-xs">(boolean)
+        <tr>
+          <td>
+          <td>|
+          <td>False
+          <td class="hidden-xs">(boolean)
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>op
+          <td>→
+          <td>symfuncs  | ` funcs `
+          <td class="hidden-xs">(operator)
+        <tr>
+          <td>symfuncs
+          <td>→
+          <td>!! | * | / | + | - | ^ | ++ | && | || | $ | == | /= | < | <= | >= | >
+          <td class="hidden-xs">(symbol functions)
+        <tr>
+          <td>funcs
+          <td>→
+          <td>abs | acos | acosh | all | and | any | asin | asinh | asTypeOf | atan | atan2 | atanh | break | ceiling | compare | concat | concatMap | const | cos | cosh | curry | decodeFloat | div | divMod | drop | dropWhile | elem |encodeFloat | enumFromThenTo | enumFromTo | even | exp | exponent | filter | flip | floatDigits | floatRadix | floatRange | floor | foldl | foldl1 | foldr | foldr1 | fromEnum | fromInteger | fromIntegral | fromRational | fst | gcd | head | id | init | isDenormalized | isIEEE | isInfinite | isNaN | isNegativeZero | last | lcm | length | lex | lines | log | logBase | map | max | maximum | min | minimum | mod | negate | not | notElem | null | odd | or | otherwise | pi | pred | product | properFraction | quot | quotRem | realToFrac | recip | rem | replicate | reverse | round | scaleFloat | scanl | scanl1 | scanr | scanr1 | seq | show | significand | signum | sin | sinh | snd | splitAt | sqrt | subtract | succ | sum | tail | take | takeWhile | tan | tanh | toInteger | toRational | truncate | uncurry | unlines | until | unwords | unzip | unzip3 | words | zip | zip3 | zipWith | zipWith3
+          <td class="hidden-xs">(functions)
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>var
+          <td>→
+          <td><b>(</b> small <b>{</b> small <b>|</b> large <b>|</b> digit <b>}</b> <b>)</b> <sub>(reservedid | funcs)<sub>
+          <td class="hidden-xs">(variable)
+        <tr>
+          <td>reservedid
+          <td>→
+          <td>case | class | data | default | deriving | do | else | foreign | if | import | in | infix | infixl | infixr | instance | let | module | newtype | of | then | type | where | _
+          <td class="hidden-xs">(keywords)
+        <tr>
+          <td>literal
+          <td>→
+          <td>num | char | string
+          <td class="hidden-xs">
+        <tr>
+          <td>num
+          <td>→
+          <td>decimal <b>[</b> .decimal <b>]</b>
+          <td class="hidden-xs">
+        <tr>
+          <td>decimal
+          <td>→
+          <td>digit <b>{</b> digit <b>}</b>
+          <td class="hidden-xs">
+        <tr>
+          <td>char
+          <td>→
+          <td>' <b>(</b> graphic <sub>( ' )</sub> <b>|</b> space <b>)</b> '
+          <td class="hidden-xs">
+        <tr>
+          <td>string
+          <td>→
+          <td>" <b>{</b> graphic <sub>( " )</sub> <b>|</b> space <b>}</b> "
+          <td class="hidden-xs">
+        <tr>
+          <td>graphic
+          <td>→
+          <td>small | large | digit | symbol | " | '
+          <td class="hidden-xs">
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>small
+          <td>→
+          <td>ascSmall | uniSmall | _
+          <td class="hidden-xs">
+        <tr>
+          <td>ascSmall
+          <td>→
+          <td>a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+          <td class="hidden-xs">
+        <tr>
+          <td>uniSmall
+          <td>→
+          <td>any Unicode lowercase letter
+          <td class="hidden-xs">([Ll])
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>large
+          <td>→
+          <td>ascLarge | uniLarge
+          <td class="hidden-xs">
+        <tr>
+          <td>ascLarge
+          <td>→
+          <td>A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+          <td class="hidden-xs">
+        <tr>
+          <td>uniLarge
+          <td>→
+          <td>any uppercase or titlecase Unicode letter
+          <td class="hidden-xs">([Lu], [Lt])
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>digit
+          <td>→
+          <td>ascDigit | uniDigit
+          <td class="hidden-xs">
+        <tr>
+          <td>ascDigit
+          <td>→
+          <td>0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+          <td class="hidden-xs">
+        <tr>
+          <td>uniDigit
+          <td>→
+          <td>any Unicode decimal digit
+          <td class="hidden-xs">([Nd])
+        <tr>
+          <td>
+          <td>
+          <td>
+        <tr>
+          <td>symbol
+          <td>→
+          <td>ascSymbol | uniSymbol
+          <td class="hidden-xs">
+        <tr>
+          <td>ascSymbol
+          <td>→
+          <td>! | # | $ | % | & | * | + | . | / | < | = | > | ? | @ | ^ | | | - | ~ | : | ( | ) | , | ; | [ | ] | ` | { | }
+          <td class="hidden-xs">
+        <tr>
+          <td>uniSymbol
+          <td>→
+          <td>any Unicode symbol or punctuation
+          <td class="hidden-xs">([Pc], [Pd], [Pe], [Pf], [Pi] , [Po], [Ps], [Sc], [Sk], [Sm], [So])

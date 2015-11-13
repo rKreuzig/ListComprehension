@@ -1,0 +1,226 @@
+$(function() {
+  initInputFields();
+  initSortable();
+  initForms();
+  initSteps();
+});
+
+function initInputFields() {
+  // set auto grow for List Comprehension input field
+  var lstComInput = $("#lst-com-text-input");
+  var maxWidth = lstComInput.width();
+  lstComInput.autoGrowInput({minWidth: 10, maxWidth: maxWidth, comfortZone: 0});
+}
+
+function initSortable() {
+  $(".lst-com-sortable").sortable({
+    connectWith: ".lst-com-sortable",
+    start: function(e, ui) {
+      // doesn't resize boxes during drag
+      ui.item.width("auto");
+      ui.item.height("auto");
+    }
+  });
+}
+
+function initForms() {
+  setLstComTextForm();
+  setLstComBoxForm();
+}
+
+function setLstComTextForm() {
+  var form = $("#lst-com-text-form");
+  form.submit(function() {
+    var lstComInput = $("#lst-com-text-input");
+    if(lstComInput.val()) {
+      // show loading modal
+      $("#loading-modal").modal("toggle");
+
+      // check if there is an open exercise
+      if(#{toJSON exeName}) {
+        // change route
+        form.attr("action", "@{LstComResultR exerciseId}");
+      }
+      return true;
+    }
+    else {
+      // show empty List Comprehension modal and exit form
+      $("#empty-lstcom-modal").modal("toggle");
+      return false;
+    }
+  });
+}
+
+function setLstComBoxForm() {
+  $("#lst-com-box-form").submit(function() {
+    var lstComHolder = $("#lst-com-box-holder");
+    var lstCom = "";
+
+    var specialPrev = true;
+    var specialCur;
+    lstComHolder.find(".draggable-box").each(function() {
+        specialCur = this.className.indexOf("big-draggable-box") > -1;
+        if(!specialPrev && !specialCur) lstCom += ",";
+        lstCom += $(this).attr("data-value");
+        specialPrev = specialCur;
+    });
+
+    if(lstCom) {
+      // show loading modal
+      $("#loading-modal").modal("toggle");
+
+      var lstComInput = $("#hidden-lst-com-box-input");
+      lstComInput.val(lstCom);
+      return true;
+    }
+    else {
+      // show empty List Comprehension modal and exit form
+      $("#empty-lstcom-modal").modal("toggle");
+      return false;
+    }
+  });
+}
+
+// globals for step functions
+var EXP_NAME = ".exp";
+var COM_NAME = ".com";
+var NO_RESULT = "-";
+var json;
+var jsonLen;
+var stepCount;
+var noStepCom;
+
+function initSteps() {
+  // init globals
+  stepCount = $("#step-input");
+  json = JSON.parse(#{toJSON json});
+  jsonLen = json.steps.length / 2;
+  noStepCom = document.getElementById(COM_NAME).innerHTML;
+
+  // set auto grow for step input field
+  stepCount.autoGrowInput({minWidth: 10, maxWidth: 80, comfortZone: 0});
+  // resize when value is set with js
+  stepCount.change(function() {
+    stepCount.trigger("autogrow");
+  });
+  // only allow numbers, backspace, left and right as input
+  stepCount.keypress(function(event) {
+    if((event.charCode >= 48 && event.charCode <= 57) || event.keyCode == 8
+       || event.keyCode == 37 || event.keyCode == 39) {
+      return true;
+    }
+    return false;
+  });
+  // override on enter
+  stepCount.keyup(function(event) {
+    if(event.keyCode == 13) {
+      jumpToStep();
+    }
+  });
+};
+
+function resetQualValues(animated) {
+  stepCount.val("0");
+  stepCount.change();
+
+  changeValue(EXP_NAME, NO_RESULT, animated);
+  changeValue(COM_NAME, noStepCom, animated);
+
+  $("div[name='qual']").each(function() {
+    var id = $(this).attr("id");
+    changeValue(id, NO_RESULT, animated);
+  });
+}
+
+function changeValue(key, value, animated) {
+  var qualValue = document.getElementById(key);
+  qualValue.innerHTML = value;
+
+  if(animated) {
+    qualValue.classList.add("signal");
+    var endFunc = function() { qualValue.classList.remove("signal") };
+    qualValue.addEventListener("animationend", endFunc, false);
+  }
+}
+
+function nextStep() {
+  var count = parseInt(stepCount.val());
+  if(count >= jsonLen) return;
+
+  // change value
+  var step = json.steps[count * 2];
+  changeValue(step.key, step.value, true);
+  // change message
+  step = json.steps[count * 2 + 1];
+  changeValue(step.key, step.value, true);
+
+  count++;
+  stepCount.val(count);
+  stepCount.change();
+}
+
+function previousStep() {
+  var count = parseInt(stepCount.val());
+  if(count > 0) {
+    count--;
+    stepCount.val(count);
+    stepCount.change();
+
+    var curStep = json.steps[count * 2];
+    var curKey = curStep.key;
+    previousValue(count, curKey, false);
+
+    // change value
+    var step = json.steps[(count - 1) * 2];
+    changeValue(step.key, step.value, true);
+    // change message
+    step = json.steps[(count - 1) * 2 + 1];
+    changeValue(step.key, step.value, true);
+  }
+}
+
+function previousValue(count, key, animated) {
+  for(var i=count;i>0;i--) {
+    var step = json.steps[(i - 1) * 2];
+    if(step.key == key) {
+      changeValue(key, step.value, animated);
+      return;
+    }
+  }
+  changeValue(key, NO_RESULT, animated);
+}
+
+function toEnd() {
+  stepCount.val(jsonLen);
+  stepCount.change();
+  jump(jsonLen);
+}
+
+function jumpToStep() {
+  var len = parseInt(stepCount.val());
+  if(len > jsonLen) {
+    len = jsonLen;
+    stepCount.val(jsonLen);
+    stepCount.change();
+  }
+  jump(len);
+}
+
+function jump(count) {
+  $("div[name='qual']").each(function() {
+    var key = $(this).attr("id");
+    previousValue(count, key, true);
+  });
+  previousValue(count, EXP_NAME, true);
+
+  // change value
+  var step = json.steps[(count - 1) * 2];
+  changeValue(step.key, step.value, true);
+  // change message
+  step = json.steps[(count - 1) * 2 + 1];
+  changeValue(step.key, step.value, true);
+}
+
+function toStart() {
+  resetQualValues(true);
+}

@@ -1,0 +1,152 @@
+$(function() {
+  init();
+});
+
+function init() {
+  // change dropdown name on select
+  $("#date-dropdown-list a").on("click", function() {
+    $("#date-dropdown-button").html($(this).html());
+  });
+
+  // add autogrow to all box input fields
+  $(".exercise-box-container").find(".box-txt-input").each(function() {
+    $(this).autoGrowInput({minWidth: 20, maxWidth: 150, comfortZone: 0});
+    $(this).trigger("autogrow");
+  });
+}
+
+function initImportForm() {
+  // set modal date buffer
+  $("#date-buffer").val($("#date-dropdown-button").html());
+
+  // edit global modal
+  var text = "Sollen alle Aufgaben importiert werden? <br>"
+           + "(Alle Aufgaben werden neu hinzugefügt)";
+  $("#global-modal-body").html(text);
+  $("#global-form").attr("action", "@{LstComAdminImportExercisesR}");
+
+  // show global modal
+  $("#global-modal").modal("toggle");
+}
+
+function initExportForm() {
+  // edit global modal
+  var text = "Sollen alle Aufgaben exportiert werden?";
+  $("#global-modal-body").html(text);
+  $("#global-form").attr("action", "@{LstComAdminExportExercisesR}");
+
+  // show global modal
+  $("#global-modal").modal("toggle");
+}
+
+function initDeleteForm() {
+  // edit global modal
+  var text = "Sollen wirklich alle Aufgaben gelöscht werden?";
+  $("#global-modal-body").html(text);
+  $("#global-form").attr("action", "@{LstComAdminDeleteExercisesR}");
+
+  // show global modal
+  $("#global-modal").modal("toggle");
+}
+
+function initNewExerciseForm() {
+  var text = "Soll diese Aufgabe wirklich angelegt werden";
+  initExerciseForm("new", text, "@{LstComAdminAddExerciseR}")
+}
+
+function initUpdateExerciseForm(id) {
+  var text = "Soll die Aufgabe wirklich bearbeitet werden?";
+  var route = $("#update-form-" + id).attr("action");
+  initExerciseForm(id, text, route);
+}
+
+function initExerciseForm(id, text, route) {
+  var name = $("#name-" + id).val();
+  var task = $("#task-" + id).val();
+  var sol = $("#solution-" + id).val();
+
+  if(!name || !task || !sol) {
+    $("#empty-fields-modal").modal("toggle");
+  }
+  else {
+    // set global modal buffers
+    $("#name-buffer").val(name);
+    $("#task-buffer").val(task);
+    $("#solution-buffer").val(sol);
+
+    // set global modal box buffer
+    var first = true;
+    var boxLst = "[";
+    $("#box-container-" + id).find("input").each(function() {
+      if(!first) boxLst += ","
+      first = false;
+      boxLst += "\"" + $(this).val() + "\"";
+    });
+    boxLst += "]";
+    $("#box-buffer").val(boxLst);
+
+    // edit and show global modal
+    $("#global-modal-body").html(text);
+    $("#global-form").attr("action", route);
+    $("#global-modal").modal("toggle");
+  }
+}
+
+function initActivateExerciseForm(id) {
+    // get text and set global modal active buffer
+    var text;
+    if($("#activate-btn-" + id).val() == 1) {
+      text = "Soll die Aufgabe wirklich deaktiviert werden?";
+      $("#active-buffer").val("False");
+    }
+    else {
+      text = "Soll die Aufgabe wirklich aktiviert werden?";
+      $("#active-buffer").val("True");
+    }
+
+    // edit and show global modal
+    $("#global-modal-body").html(text);
+    var route = $("#activate-form-" + id).attr("action");
+    $("#global-form").attr("action", route);
+    $("#global-modal").modal("toggle");
+}
+
+function initDeleteExerciseForm(id) {
+  // edit global modal text
+  var text = "Soll die Aufgabe wirklich gelöscht werden?"
+  $("#global-modal-body").html(text);
+
+  // edit global modal route
+  var route = $("#delete-form-" + id).attr("action");
+  $("#global-form").attr("action", route);
+
+  // show global modal
+  $("#global-modal").modal("toggle");
+}
+
+function newBox(id) {
+  // create new box
+  var box = document.createElement("li");
+  var $box = $(box);
+  box.className = "exercise-box";
+
+  // create input text field
+  var txt = document.createElement("input");
+  txt.type ="text";
+  txt.className = "form-control box-txt-input";
+
+  // create close button
+  var btn = document.createElement("button");
+  btn.className = "btn btn-default box-close-btn";
+  btn.onclick = function() { $box.remove(); };
+  btn.innerHTML = "<span class='glyphicon glyphicon-remove'></span>";
+
+  // add text and button to the new box
+  $box.append(txt);
+  $box.append(btn);
+
+  // add the new box the the box container
+  var container = $("#box-container-" + id);
+  $(container).append(box);
+  $(txt).autoGrowInput({minWidth: 20, maxWidth: 150, comfortZone: 0});
+}

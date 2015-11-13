@@ -1,0 +1,8 @@
+-- By default this file is used in Model.hs (which is imported by Foundation.hs)
+
+Exercise json
+  name Text
+  task Text
+  solution Text
+  boxes [Text]
+  active Bool

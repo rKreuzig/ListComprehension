@@ -1,0 +1,22 @@
+/static StaticR Static appStatic
+
+/favicon.ico FaviconR GET
+/robots.txt RobotsR GET
+
+/ HomeR GET
+
+/LstCom/ LstComR GET
+/LstCom/exercise/#ExerciseId LstComExerciseR GET
+/LstCom/result/#ExerciseId LstComResultR POST
+/LstCom/resultWithoutExercise/ LstComResultWithoutExerciseR POST
+
+/LstComAdmin/ LstComAdminR GET
+/LstComAdmin/import/ LstComAdminImportExercisesR POST
+/LstComAdmin/export/ LstComAdminExportExercisesR POST
+/LstComAdmin/delete_all/ LstComAdminDeleteExercisesR POST
+/LstComAdmin/add/ LstComAdminAddExerciseR POST
+/LstComAdmin/update/#ExerciseId LstComAdminUpdateExerciseR POST
+/LstComAdmin/delete/#ExerciseId LstComAdminDeleteExerciseR POST
+/LstComAdmin/active/#ExerciseId LstComAdminActiveExerciseR POST
+
+/LstComExplanation/ LstComExplanationR GET

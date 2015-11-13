@@ -1,0 +1,42 @@
+.little-space {
+  height: 5px;
+}
+
+#panel-buttons .btn {
+  border: 1px solid #2e2e2e;
+}
+
+.exercise-description {
+  resize: vertical;
+}
+
+.exercise-box-container {
+  padding: 0px;
+  list-style-type: none;
+}
+
+.exercise-box {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  display: inline-block;
+  background-color: #f9f9f9;
+  border: 1px solid #2e2e2e;
+  border-radius: 5px;
+}
+
+.box-txt-input {
+  height: auto;
+  margin-right: 5px;
+
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.box-close-btn {
+  display: inline-block;
+}

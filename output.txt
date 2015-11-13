@@ -1,0 +1,1 @@
+Left "Fehler - Keine Eingabe vor oder nach Komma : (11,11)"

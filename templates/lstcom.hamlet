@@ -1,0 +1,191 @@
+<div class="container">
+  <!-- empty List Comprehension modal -->
+  <div class="modal fade" id="empty-lstcom-modal">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          Bitte List Comprehension eingeben
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen
+
+  <!-- loading modal -->
+  <div class="modal fade" id="loading-modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content text-center">
+        <div class="spinner">
+
+  <!-- title -->
+  <h1 class="text-center">List Comprehension
+
+  <!-- How does it work? -->
+  <div class="box">
+    <!-- title -->
+    <h3>Wie funktioniert es?
+    <div class="space">
+    <!-- explanation -->
+    Du hast diese Seite noch nicht komplett verstanden oder du hast noch nicht
+    den vollen Durchblick im Thema List Comprehension? Dann klicke bitte
+    <a href=@{LstComExplanationR}>hier</a>, um zur Erklärung zu gelangen!<br><br>
+    Achtung:<br>
+    Dieser Webservice verwendet eine abgespeckte Grammatik. Dies
+    bedeutet, dass nicht alle offiziell gültigen List Comprehensions
+    verarbeitet werden können. Bitte klicke <a href="@{LstComExplanationR}#grammar">hier</a>,
+    um mehr zu erfahren.
+
+  <!-- Exercise -->
+  <div class="box">
+    <!-- dropdown -->
+    <div class="dropdown">
+      <!-- Dropdown button -->
+      <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <h3>
+          $if null exeName
+            Aufgaben <span class="caret">
+          $else
+            #{exeName} <span class="caret">
+      <!-- Dropdown elements -->
+      <ul class="dropdown-menu">
+        <li>
+          <a href=@{LstComR}>Keine Aufgabe
+        $forall (Entity eid e) <- exercises
+          <li>
+            <a href=@{LstComExerciseR eid}>#{exerciseName e}
+    <div class="space">
+    <!-- description -->
+    <div>
+      $if null exeTask
+        Bitte Aufgabe auswählen
+      $else
+        #{preEscapedToMarkup exeTask}
+
+  $if null boxes
+    <!-- List Comprehension text input -->
+    <form id="lst-com-text-form" method="post" action=@{LstComResultWithoutExerciseR}>
+      <div class="box">
+        <!-- title -->
+        <h3>List Comprehension:
+        <div class="space">
+        <!-- input field -->
+        <input type="text" class="form-control" id="lst-com-text-input" value=#{lstCom} name="lstComInput">
+        <div class="space">
+        <!-- start button -->
+        <button class="btn btn-default" type="submit">Start
+  $else
+    <!-- List Comprehension drag and drop input -->
+    <form id="lst-com-box-form" method="post" action=@{LstComResultR exerciseId}>
+      <!-- hidden text input -->
+      <input type="text" id="hidden-lst-com-box-input" name="lstComInput" style="display: none;">
+      <div class="box">
+        <!-- title -->
+        <h3>List Comprehension:
+        <div class="space">
+        <!-- box holder -->
+        <ul class="lst-com-sortable">
+          <!-- boxes -->
+          $forall expr <- boxes
+            <li class="draggable-box" data-value="#{expr}">#{expr}
+        <!-- List Comprehension holder -->
+        <ul class="lst-com-sortable" id="lst-com-box-holder">
+          <li class="draggable-box big-draggable-box" data-value="[">[
+          <li class="draggable-box big-draggable-box" data-value="|">|
+          <li class="draggable-box big-draggable-box" data-value="]">]
+        <!-- start button -->
+        <button class="btn btn-default">Start
+
+  <!-- Steps -->
+  $if not $ null json
+    <div class="box">
+      <!-- title -->
+      <div class="middle-inline-block" style="margin-right: 10px;">
+        <h3 class="middle-inline-block">Schritte:
+        <div class="space">
+      <!-- buttons and input field -->
+      <div class="middle-inline-block">
+        <span class="glyphicon glyphicon-step-backward" id="step-button" onclick="toStart()">
+        <span class="glyphicon glyphicon-triangle-left" id="step-button" onclick="previousStep()">
+        <input type="text" class="form-control" id="step-input" value="0">
+        <span class="glyphicon glyphicon-triangle-right" id="step-button" onclick="nextStep()">
+        <span class="glyphicon glyphicon-step-forward" id="step-button" onclick="toEnd()">
+        <div class="space">
+      <div class="space">
+      <!-- explanation -->
+      <span id=".com">
+        Bitte klicken Sie auf
+        <span class="glyphicon glyphicon-triangle-right">
+        oder
+        <span class="glyphicon glyphicon-step-forward">
+        oder geben Sie eine Schrittzahl in das Textfeld ein und bestätigen Sie mit
+        Enter
+      <div class="space">
+      <div class="space">
+      <!-- List Comprehension -->
+      <div>
+        <span class="step-special-sign" style="margin-right: 5px;">[
+        <!-- left expression -->
+        <div class="inline-block">
+          <!-- above message -->
+          <div class="text-center" id=".exp">
+            -
+          <div class="text-center">
+            #{leftExpr}
+          <div class="space">
+        <span class="step-special-sign">|
+        <!-- qualifiers -->
+        $forall qual <- (init quals)
+          <div class="inline-block">
+            <!-- above message -->
+            <div class="text-center" id="#{qualPos qual}" name="qual">
+              -
+            <!-- qualifier -->
+            <div>
+              $if (qualType qual) == Generator
+                #{qualVars qual} <- #{qualExpr qual},
+              $if (qualType qual) == Guard
+                #{qualExpr qual},
+            <div class="space">
+        <!-- last qualifier -->
+        $with qual <- (last quals)
+          <div class="inline-block">
+            <div class="inline-block">
+              <!-- above message -->
+              <div class="text-center" id="#{qualPos qual}" name="qual">
+                -
+              <!-- qualifier -->
+              <div>
+                $if (qualType qual) == Generator
+                  #{qualVars qual} <- #{qualExpr qual}
+                $if (qualType qual) == Guard
+                  #{qualExpr qual}
+              <div class="space">
+            <!-- List Comprehension close bracket inside qualifier -->
+            <span class="step-special-sign">]
+
+  <!-- Result -->
+  $if not $ null result
+    <div class="box">
+      <!-- title -->
+      <h3>
+        Ergebnis:
+        $if not $ null expectedResult
+          $if result == expectedResult
+            \ Richtig!
+          $else
+            \ Leider Falsch
+      <div class="space">
+      <span class="break-word">
+        <!-- result -->
+        #{result}
+        <div class="space">
+        <!-- error message -->
+        $if isPrefixOf "Fehler" result
+          #{leftResult}<span class="bg-danger">#{redResult}</span>#{rightResult}
+
+  <!-- Expected result -->
+  $if not $ null expectedResult
+    <div class="box">
+      <!-- title -->
+      <h3>Erwartete Ausgabe:
+      <div class="space">
+      <span class="break-word">
+        <!-- result -->
+        #{expectedResult}
